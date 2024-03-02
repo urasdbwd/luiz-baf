@@ -71,7 +71,6 @@ function connectWebsocket(url: string = getConfigProperty('WEBSOCKET_URL')) {
     _websocket = new WebSocket(`${url}?player=${ingameName}&version=${version}&SId=${getSessionId(ingameName)}`)
     _websocket.onopen = function () {
         setupConsoleInterface(bot)
-        sendWebhookInitialized()
         updatePersistentConfigProperty('WEBSOCKET_URL', url)
     }
     _websocket.onmessage = onWebsocketMessage
@@ -97,17 +96,22 @@ async function onWebsocketMessage(msg) {
             log(message, 'debug')
             flipHandler(bot, data)
             break
-        case 'chatMessage':
-            for (let da of [...(data as TextMessageData[])]) {
-                let isCoflChat = isCoflChatMessage(da.text)
-                if (!isCoflChat) {
-                    log(message, 'debug')
+            case 'chatMessage':
+                for (let da of [...(data as TextMessageData[])]) {
+                    let isCoflChat = isCoflChatMessage(da.text)
+                    if (da.text.startsWith("Your") && da.text.includes("connection id is")) {
+                        let textmsg = da.text.replace(',', '').split(' ');
+                        let ID = textmsg[4]
+                        sendWebhookInitialized(ID)
+                    }
+                    if (!isCoflChat) {
+                        log(message, 'debug')
+                    }
+                    if (getConfigProperty('USE_COFL_CHAT') || !isCoflChat) {
+                        printMcChatToConsole(da.text)
+                    }
                 }
-                if (getConfigProperty('USE_COFL_CHAT') || !isCoflChat) {
-                    printMcChatToConsole(da.text)
-                }
-            }
-            break
+                break
         case 'writeToChat':
             let isCoflChat = isCoflChatMessage(data.text)
             if (!isCoflChat) {

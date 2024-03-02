@@ -9,7 +9,6 @@ interface Config {
     USE_COFL_CHAT: boolean
     ENABLE_CONSOLE_INPUT: boolean
     SESSIONS: SESSIONS
-    USE_WINDOW_SKIPS: boolean
     WEBSOCKET_URL: string
 }
 
