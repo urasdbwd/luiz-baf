@@ -51,6 +51,7 @@ export function sendWebhookItemPurchased(itemName: string, price: string, profit
         return
     }
     let ingameName = getConfigProperty('INGAME_NAME')
+    let percent = ((Number(profit) / Number(price.replace(/,/g, ""))) * 100).toFixed(2);
     sendWebhookData({
         embeds: [
             {
@@ -69,7 +70,7 @@ export function sendWebhookItemPurchased(itemName: string, price: string, profit
                     },
                     {
                         name: 'Estimated Profit:',
-                        value: `\`\`\`${profit}\`\`\``,
+                        value: `\`\`\`${percent}%\`\`\``,
                         inline: false,
                     },
                     { name:' ', value:`<t:${(Date.now() / 1000).toFixed(0)}:R>`, inline: false}

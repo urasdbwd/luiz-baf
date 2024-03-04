@@ -10,17 +10,17 @@ import { claimSoldItem, registerIngameMessageHandler } from './ingameMessageHand
 import { MyBot, TextMessageData } from '../types/autobuy'
 import { getConfigProperty, initConfigHelper, updatePersistentConfigProperty } from './configHelper'
 import { getSessionId } from './coflSessionManager'
-import { sendWebhookInitialized } from './webhookHandler'
+import { sendWebhookInitialized, sendWebhookItemPurchased } from './webhookHandler'
 import { handleCommand, setupConsoleInterface } from './consoleHandler'
 import { initAFKHandler, tryToTeleportToIsland } from './AFKHandler'
 const WebSocket = require('ws')
 var prompt = require('prompt-sync')()
 initConfigHelper()
 initLogger()
-const version = '1.5.1-af'
+const version = '1.5.0-af'
 let _websocket: WebSocket
 let ingameName = getConfigProperty('INGAME_NAME')
-
+sendWebhookItemPurchased("drugs", "1,000,000", "900000")
 if (!ingameName) {
     ingameName = prompt('Enter your ingame name: ')
     updatePersistentConfigProperty('INGAME_NAME', ingameName)
@@ -90,7 +90,6 @@ function connectWebsocket(url: string = getConfigProperty('WEBSOCKET_URL')) {
 async function onWebsocketMessage(msg) {
     let message = JSON.parse(msg.data)
     let data = JSON.parse(message.data)
-
     switch (message.type) {
         case 'flip':
             log(message, 'debug')
